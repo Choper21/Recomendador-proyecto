@@ -37,5 +37,5 @@ interacciones.log
 node_modules/
 dist/
 
-# Entorno
+# Entorno   
 .env
