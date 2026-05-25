@@ -61,7 +61,7 @@ scouting-terminal/
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/TU_USUARIO/scouting-terminal.git
+git clone [https://github.com/TU_USUARIO/scouting-terminal.git](https://github.com/Choper21/Recomendador-proyecto.git)
 cd scouting-terminal
 2. Backend
 bash
