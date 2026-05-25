@@ -331,33 +331,40 @@ function App() {
             </div>
           </section>
         )}
-
-        {parati.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold text-cyan-400 flex items-center gap-2 mb-4">
-              <Sparkles size={20} /> Para ti
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {parati.map((jug, idx) => (
-                <div key={idx} className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-xl p-5 hover:border-cyan-500/30 hover:bg-slate-800/60 transition-all">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-white font-bold text-lg">{jug.nombre}</h3>
-                      <p className="text-cyan-400 text-sm">{jug.equipo}</p>
-                    </div>
-                    <span className="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded-full">
-                      {jug.frecuencia} usuarios
-                    </span>
-                  </div>
-                  <p className="text-slate-500 text-xs mt-2">{jug.posicion}</p>
-                  <p className="text-slate-400 text-xs mt-3 italic">
-                    Usuarios con tus búsquedas también consultaron a este jugador.
-                  </p>
-                </div>
-              ))}
+<section className="mb-10">
+  <h2 className="text-xl font-bold text-cyan-400 flex items-center gap-2 mb-4">
+    <Sparkles size={20} /> Para ti
+  </h2>
+  {parati.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {parati.map((jug, idx) => (
+        <div key={idx} className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-xl p-5 hover:border-cyan-500/30 hover:bg-slate-800/60 transition-all">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-white font-bold text-lg">{jug.nombre}</h3>
+              <p className="text-cyan-400 text-sm">{jug.equipo}</p>
             </div>
-          </section>
-        )}
+            <span className="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded-full">
+              {jug.frecuencia} usuarios
+            </span>
+          </div>
+          <p className="text-slate-500 text-xs mt-2">{jug.posicion}</p>
+          <p className="text-slate-400 text-xs mt-3 italic">
+            Usuarios con tus búsquedas también consultaron a este jugador.
+          </p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-8 text-center">
+      <Sparkles size={32} className="mx-auto text-slate-600 mb-3" />
+      <p className="text-slate-400 text-sm max-w-md mx-auto">
+        Aún no hay recomendaciones personalizadas. <br/>
+        Sigue buscando jugadores y cuando otros ojeadores con tus mismos intereses descubran nuevos talentos, aparecerán aquí.
+      </p>
+    </div>
+  )}
+</section>
 
         {/* "Podría interesarte" basado en guardados */}
         {savedRecs.length > 0 && (
