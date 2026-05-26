@@ -1,36 +1,24 @@
 import { useState, useEffect } from 'react';
 import {
-  obtenerRecomendaciones,
-  obtenerTendencias,
-  obtenerParati,
-  savePlayer,
-  unsavePlayer,
-  getSavedPlayers,
-  getSavedRecommendations,
-  loginUser,
-  registerUser
+  obtenerRecomendaciones, obtenerTendencias, obtenerParati, savePlayer,
+  unsavePlayer, getSavedPlayers, getSavedRecommendations, loginUser, registerUser
 } from './apiService';
 import {
-  Search,
-  LogOut,
-  TrendingUp,
-  UserPlus,
-  LogIn,
-  Sparkles,
-  Bookmark,
-  BookmarkCheck,
-  X
+  Search, LogOut, TrendingUp, Sparkles, Bookmark, BookmarkCheck, X
 } from 'lucide-react';
 
+// Se importan los módulos recién creados
+import AuthScreen from './components/AuthScreen';
+import PlayerModal from './components/PlayerModal';
+
 function App() {
-  // Auth
+  // Se conserva la lógica de estado intacta
   const [token, setToken] = useState(localStorage.getItem('scoutToken') || null);
   const [authMode, setAuthMode] = useState('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // App principal
   const [jugador, setJugador] = useState('');
   const [resultados, setResultados] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -38,11 +26,12 @@ function App() {
   const [parati, setParati] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Guardados
   const [savedPlayers, setSavedPlayers] = useState([]);
   const [savedNames, setSavedNames] = useState(new Set());
   const [savedRecs, setSavedRecs] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
+
+  const [jugadorSeleccionado, setJugadorSeleccionado] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -148,6 +137,7 @@ function App() {
     setSavedPlayers([]);
     setSavedNames(new Set());
     setSavedRecs([]);
+    setJugadorSeleccionado(null);
   };
 
   const buscar = async () => {
@@ -164,146 +154,119 @@ function App() {
     setCargando(false);
   };
 
+  // Se delega el renderizado al componente modular
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-slate-950 to-emerald-950 p-8">
-        <div className="bg-slate-900/80 backdrop-blur-md p-8 rounded-2xl border border-slate-700/50 w-full max-w-md shadow-2xl">
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-emerald-500/20 p-3 rounded-full">
-              <Sparkles className="text-emerald-400" size={32} />
-            </div>
-          </div>
-          <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 text-center mb-2">
-            SCOUTING TERMINAL
-          </h1>
-          <p className="text-slate-400 text-sm text-center mb-6">Sistema inteligente de recomendación de fichajes</p>
-
-          <div className="flex justify-center mb-6">
-            <button
-              onClick={() => setAuthMode('login')}
-              className={`px-5 py-2 rounded-l-lg font-medium transition-all ${authMode === 'login' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
-            >
-              <LogIn className="inline mr-1" size={16} /> Iniciar sesión
-            </button>
-            <button
-              onClick={() => setAuthMode('register')}
-              className={`px-5 py-2 rounded-r-lg font-medium transition-all ${authMode === 'register' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
-            >
-              <UserPlus className="inline mr-1" size={16} /> Registro
-            </button>
-          </div>
-
-          <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
-            <input
-              className="w-full bg-slate-800/50 border border-slate-700/50 p-3 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-100 placeholder-slate-500"
-              placeholder="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              className="w-full bg-slate-800/50 border border-slate-700/50 p-3 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-100 placeholder-slate-500"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            {authError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
-                {authError}
-              </div>
-            )}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 p-3 rounded-lg font-bold hover:from-emerald-500 hover:to-cyan-500 transition-all shadow-lg shadow-emerald-600/25 text-white"
-            >
-              {authMode === 'login' ? 'Entrar' : 'Crear cuenta'}
-            </button>
-          </form>
-        </div>
-      </div>
+      <AuthScreen 
+        authMode={authMode} setAuthMode={setAuthMode}
+        username={username} setUsername={setUsername}
+        password={password} setPassword={setPassword}
+        handleLogin={handleLogin} handleRegister={handleRegister}
+        authError={authError}
+      />
     );
   }
 
+  // Se mejora la estructura visual global, incorporando backgrounds premium y unificaciones de tarjetas
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-emerald-950 text-slate-100 p-6 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <header className="mb-10">
-          <div className="flex justify-between items-center mb-8">
+  <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-8 font-sans selection:bg-emerald-500/30">
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        <header className="mb-12 pt-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-cyan-300 tracking-tight">
                 SCOUTING TERMINAL
               </h1>
-              <p className="text-slate-400 mt-1">Descubre el próximo fichaje perfecto</p>
+              <p className="text-slate-400 mt-2 font-medium">Inteligencia de datos para descubrir tu próximo fichaje</p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSaved(!showSaved)}
-                className="flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 px-4 py-2 rounded-lg transition-all text-slate-300"
+                className="flex items-center gap-2 bg-slate-800/40 hover:bg-slate-700/60 border border-slate-700/50 px-5 py-2.5 rounded-xl transition-all text-slate-300 shadow-sm font-semibold"
               >
-                <BookmarkCheck size={16} /> Guardados ({savedPlayers.length})
+                <BookmarkCheck size={18} className="text-emerald-400" /> 
+                Guardados <span className="bg-slate-700 px-2 py-0.5 rounded-md text-xs">{savedPlayers.length}</span>
               </button>
               <button
                 onClick={cerrarSesion}
-                className="flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200"
+                className="flex items-center gap-2 bg-slate-800/40 hover:bg-red-500/10 border border-slate-700/50 hover:border-red-500/30 px-5 py-2.5 rounded-xl transition-all text-slate-400 hover:text-red-400 font-semibold"
               >
-                <LogOut size={16} /> Salir
+                <LogOut size={18} /> Salir
               </button>
             </div>
           </div>
 
-          {/* Buscador */}
-          <div className="relative">
-            <div className="flex gap-2">
-              <input
-                className="flex-1 bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-100 placeholder-slate-500 text-lg"
-                placeholder="Buscar jugador similar a... (ej. Salah)"
-                value={jugador}
-                onChange={(e) => setJugador(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && buscar()}
-              />
+          <div className="relative max-w-3xl">
+            <div className="flex gap-3">
+              <div className="relative flex-1 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" size={22} />
+                <input
+                  className="w-full bg-slate-900/60 backdrop-blur-md border border-slate-700/50 hover:border-slate-600 focus:border-emerald-500 py-4 pl-12 pr-4 rounded-2xl outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all text-slate-100 placeholder-slate-500 text-lg shadow-inner"
+                  placeholder="Buscar jugador similar a... (ej. Salah)"
+                  value={jugador}
+                  onChange={(e) => setJugador(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && buscar()}
+                />
+              </div>
               <button
                 onClick={buscar}
                 disabled={cargando}
-                className="bg-emerald-600 hover:bg-emerald-500 px-6 rounded-xl transition-all shadow-lg shadow-emerald-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 px-8 rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] disabled:opacity-50 disabled:cursor-not-allowed font-bold text-white tracking-wide active:scale-95"
               >
-                <Search className="text-white" size={24} />
+                {cargando ? 'Buscando...' : 'Analizar'}
               </button>
             </div>
             {errorMsg && (
-              <div className="mt-3 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
+              <div className="absolute top-full mt-3 left-0 w-full bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm font-medium">
                 {errorMsg}
               </div>
             )}
           </div>
         </header>
 
-        {/* Sección de Guardados (si está abierta) */}
         {showSaved && (
-          <section className="mb-10 bg-slate-900/60 backdrop-blur-md border border-slate-800/50 rounded-2xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-cyan-400 flex items-center gap-2">
-                <BookmarkCheck size={20} /> Tus jugadores guardados
+          <section className="mb-14 bg-slate-800/30 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+            <div className="flex justify-between items-center mb-6 relative z-10">
+              <h2 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
+                <BookmarkCheck size={24} className="text-emerald-400" /> Tu Agenda de Fichajes
               </h2>
-              <button onClick={() => setShowSaved(false)}>
-                <X size={20} className="text-slate-500 hover:text-slate-300" />
+              <button onClick={() => setShowSaved(false)} className="text-slate-500 hover:text-white bg-slate-900/50 p-2 rounded-full transition-colors border border-slate-700/50">
+                <X size={20} />
               </button>
             </div>
+            
             {savedPlayers.length === 0 ? (
-              <p className="text-slate-500">Aún no has guardado ningún jugador.</p>
+              <div className="text-center py-10 bg-slate-900/30 rounded-2xl border border-slate-700/30 border-dashed">
+                <Bookmark className="mx-auto text-slate-600 mb-3" size={32} />
+                <p className="text-slate-500 font-medium">Aún no has guardado ningún jugador en tu agenda.</p>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 relative z-10">
                 {savedPlayers.map((p, i) => (
-                  <div key={i} className="bg-slate-800/50 border border-slate-700/30 rounded-xl p-4 flex justify-between items-center">
-                    <div>
-                      <p className="text-white font-medium">{p.nombre}</p>
-                      <p className="text-slate-400 text-sm">{p.equipo} · {p.posicion}</p>
+                  <div 
+                    key={i} 
+                    onClick={() => setJugadorSeleccionado(p)}
+                    className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-5 flex flex-col justify-between cursor-pointer hover:border-emerald-500/40 hover:bg-slate-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-white font-bold text-lg leading-tight group-hover:text-emerald-300 transition-colors">{p.nombre}</h3>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEliminarGuardado(p.nombre);
+                        }} 
+                        className="text-slate-500 hover:text-red-400 hover:bg-red-500/10 p-1.5 rounded-md transition-all -mt-1 -mr-1"
+                        title="Eliminar"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
-                    <button onClick={() => handleEliminarGuardado(p.nombre)} className="text-slate-500 hover:text-red-400 transition-colors">
-                      <X size={18} />
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs font-semibold px-2.5 py-1 bg-slate-800 text-slate-300 rounded-md border border-slate-700">{p.equipo}</span>
+                      <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-md border border-emerald-500/20">{p.posicion}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -311,19 +274,25 @@ function App() {
           </section>
         )}
 
-        {/* Secciones de recomendaciones pasivas */}
         {tendencias.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold text-emerald-400 flex items-center gap-2 mb-4">
-              <TrendingUp size={20} /> Tendencias globales
+          <section className="mb-14">
+            <h2 className="text-2xl font-black text-white flex items-center gap-3 mb-6 tracking-tight">
+              <TrendingUp size={24} className="text-emerald-400" /> Radar Global
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {tendencias.slice(0, 12).map((jug, idx) => (
-                <div key={idx} className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-xl p-4 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all">
-                  <div className="text-emerald-400 font-bold text-sm truncate">{jug.nombre}</div>
-                  <div className="text-slate-500 text-xs mt-1">{jug.equipo}</div>
-                  <div className="text-slate-400 text-xs mt-2 flex items-center gap-1">
-                    <TrendingUp size={12} />
+                <div 
+                  key={idx} 
+                  onClick={() => setJugadorSeleccionado(jug)}
+                  className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 cursor-pointer transition-all duration-300 hover:bg-slate-800/80 hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(16,185,129,0.08)] group"
+                >
+                  <div className="text-white font-bold text-sm mb-2 group-hover:text-emerald-300 transition-colors line-clamp-1">{jug.nombre}</div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-semibold text-slate-400 truncate">{jug.equipo}</span>
+                    <span className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-wide">{jug.posicion}</span>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-slate-700/50 text-slate-500 text-xs flex items-center gap-1.5 font-medium">
+                    <TrendingUp size={12} className="text-emerald-500" />
                     {jug.apariciones} búsquedas
                   </div>
                 </div>
@@ -331,110 +300,133 @@ function App() {
             </div>
           </section>
         )}
-<section className="mb-10">
-  <h2 className="text-xl font-bold text-cyan-400 flex items-center gap-2 mb-4">
-    <Sparkles size={20} /> Para ti
-  </h2>
-  {parati.length > 0 ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {parati.map((jug, idx) => (
-        <div key={idx} className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-xl p-5 hover:border-cyan-500/30 hover:bg-slate-800/60 transition-all">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-white font-bold text-lg">{jug.nombre}</h3>
-              <p className="text-cyan-400 text-sm">{jug.equipo}</p>
-            </div>
-            <span className="bg-cyan-500/20 text-cyan-300 text-xs px-2 py-1 rounded-full">
-              {jug.frecuencia} usuarios
-            </span>
-          </div>
-          <p className="text-slate-500 text-xs mt-2">{jug.posicion}</p>
-          <p className="text-slate-400 text-xs mt-3 italic">
-            Usuarios con tus búsquedas también consultaron a este jugador.
-          </p>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-8 text-center">
-      <Sparkles size={32} className="mx-auto text-slate-600 mb-3" />
-      <p className="text-slate-400 text-sm max-w-md mx-auto">
-        Aún no hay recomendaciones personalizadas. <br/>
-        Sigue buscando jugadores y cuando otros ojeadores con tus mismos intereses descubran nuevos talentos, aparecerán aquí.
-      </p>
-    </div>
-  )}
-</section>
 
-        {/* "Podría interesarte" basado en guardados */}
-        {savedRecs.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold text-purple-400 flex items-center gap-2 mb-4">
-              <BookmarkCheck size={20} /> Podría interesarte
+        <div className="grid lg:grid-cols-2 gap-8 mb-14">
+          <section>
+            <h2 className="text-2xl font-black text-white flex items-center gap-3 mb-6 tracking-tight">
+              Recomendado Para Ti
             </h2>
-            <p className="text-slate-400 text-sm mb-4">
-              Basado en lo que otros usuarios con gustos similares han guardado.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {savedRecs.map((jug, idx) => (
-                <div key={idx} className="bg-slate-900/60 backdrop-blur-sm border border-purple-500/20 rounded-xl p-5 hover:border-purple-500/40 hover:bg-slate-800/60 transition-all">
-                  <div className="flex justify-between items-start">
+            {parati.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {parati.slice(0,4).map((jug, idx) => (
+                  <div 
+                    key={idx} 
+                    onClick={() => setJugadorSeleccionado(jug)}
+                    className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:bg-slate-800/80 hover:border-cyan-500/40 hover:shadow-lg flex justify-between items-center group"
+                  >
                     <div>
-                      <h3 className="text-white font-bold text-lg">{jug.nombre}</h3>
-                      <p className="text-purple-400 text-sm">{jug.equipo}</p>
+                      <h3 className="text-white font-bold text-lg group-hover:text-cyan-300 transition-colors">{jug.nombre}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-slate-400">{jug.equipo}</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <span className="text-xs font-bold text-cyan-400">{jug.posicion}</span>
+                      </div>
                     </div>
-                    <span className="bg-purple-500/20 text-purple-300 text-xs px-2 py-1 rounded-full">
-                      {jug.frecuencia} guardados
+                    <span className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs px-3 py-1.5 rounded-lg font-bold flex flex-col items-center">
+                      <span className="text-lg leading-none">{jug.frecuencia}</span>
+                      <span className="text-[9px] uppercase tracking-wider opacity-80 mt-0.5">Afines</span>
                     </span>
                   </div>
-                  <p className="text-slate-500 text-xs mt-2">{jug.posicion}</p>
-                  <p className="text-slate-400 text-xs mt-3 italic">
-                    Usuarios que guardan jugadores como los tuyos también guardan a {jug.nombre}.
-                  </p>
-                  {/* Podríamos añadir botón de guardar aquí, pero mejor simple */}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-slate-800/20 border border-slate-700/30 rounded-2xl p-8 text-center h-full flex flex-col justify-center items-center">
+               
+                <p className="text-slate-400 text-sm font-medium">Amplía tus búsquedas para recibir recomendaciones del algoritmo.</p>
+              </div>
+            )}
           </section>
-        )}
 
-        {/* Resultados de búsqueda */}
+          {savedRecs.length > 0 && (
+            <section>
+              <h2 className="text-2xl font-black text-white flex items-center gap-3 mb-6 tracking-tight">
+                <BookmarkCheck size={24} className="text-purple-400" /> Basado en tu Agenda
+              </h2>
+              <div className="flex flex-col gap-4">
+                {savedRecs.slice(0,4).map((jug, idx) => (
+                  <div 
+                    key={idx} 
+                    onClick={() => setJugadorSeleccionado(jug)}
+                    className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 hover:bg-slate-800/80 hover:border-purple-500/40 hover:shadow-lg flex justify-between items-center group"
+                  >
+                    <div>
+                      <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors">{jug.nombre}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-slate-400">{jug.equipo}</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <span className="text-xs font-bold text-purple-400">{jug.posicion}</span>
+                      </div>
+                    </div>
+                    <span className="bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs px-3 py-1.5 rounded-lg font-bold flex flex-col items-center">
+                      <span className="text-lg leading-none">{jug.frecuencia}</span>
+                      <span className="text-[9px] uppercase tracking-wider opacity-80 mt-0.5">Red</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
         {resultados.length > 0 && (
-          <section>
-            <h2 className="text-xl font-bold text-emerald-400 mb-4">Resultados de la búsqueda</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <section className="mb-14">
+            <h2 className="text-3xl font-black text-white flex items-center gap-3 mb-8 tracking-tight">
+              Informe de Similitud
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {resultados.map((res, i) => (
                 <div
                   key={i}
-                  className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-xl p-6 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all group relative"
+                  onClick={() => setJugadorSeleccionado(res)}
+                  className="bg-slate-800/40 backdrop-blur-md border border-slate-700/60 rounded-3xl p-6 cursor-pointer transition-all duration-300 hover:bg-slate-800/80 hover:border-emerald-500/50 hover:-translate-y-1.5 hover:shadow-[0_15px_40px_rgba(16,185,129,0.12)] group relative flex flex-col"
                 >
-                  <h2 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">{res.nombre}</h2>
-                  <p className="text-emerald-400 text-sm">{res.equipo}</p>
-                  <div className="mt-4 text-xs text-slate-400 italic leading-relaxed">
-                    {res.explicacion_caja_blanca}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-2xl font-mono font-bold text-emerald-500">
-                      {res.score_final}%
-                    </span>
-                    <div className="flex gap-2">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold text-white group-hover:text-emerald-300 transition-colors mb-1">{res.nombre}</h2>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-400 font-medium">{res.equipo}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
+                        <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">{res.posicion}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Botón de guardado reubicado para mejor UX */}
+                    <div className="absolute top-6 right-6 z-10">
                       {savedNames.has(res.nombre) ? (
                         <button
-                          onClick={() => handleEliminarGuardado(res.nombre)}
-                          className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); handleEliminarGuardado(res.nombre); }}
+                          className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 p-2.5 rounded-xl transition-all shadow-sm"
                           title="Quitar de guardados"
                         >
                           <BookmarkCheck size={20} fill="currentColor" />
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleGuardar(res.nombre)}
-                          className="text-slate-500 hover:text-cyan-400 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); handleGuardar(res.nombre); }}
+                          className="bg-slate-900/50 text-slate-400 border border-slate-700 hover:text-emerald-400 hover:border-emerald-500/30 p-2.5 rounded-xl transition-all"
                           title="Guardar jugador"
                         >
                           <Bookmark size={20} />
                         </button>
                       )}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-auto bg-slate-900/40 rounded-2xl p-4 border border-slate-800 mb-4">
+                    <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                      {res.explicacion_caja_blanca}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-end justify-between mt-2">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Match Index</span>
+                      <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tighter">
+                        {res.score_final}%
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-500 font-semibold group-hover:text-emerald-500 transition-colors">
+                      Ver ficha completa →
                     </div>
                   </div>
                 </div>
@@ -444,10 +436,16 @@ function App() {
         )}
 
         {resultados.length === 0 && !cargando && (
-          <div className="text-center py-20 text-slate-600">
-            <p className="text-xl">🔍 Realiza una búsqueda para obtener recomendaciones</p>
+          <div className="text-center py-32 opacity-50">
+            <Search className="mx-auto text-slate-600 mb-4" size={48} strokeWidth={1} />
+            <p className="text-xl font-medium text-slate-500">Inicia una búsqueda en la terminal superior</p>
           </div>
         )}
+
+        <PlayerModal 
+          jugadorSeleccionado={jugadorSeleccionado} 
+          setJugadorSeleccionado={setJugadorSeleccionado} 
+        />
       </div>
     </div>
   );

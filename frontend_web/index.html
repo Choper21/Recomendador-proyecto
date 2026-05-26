@@ -1,13 +1,67 @@
-<!doctype html>
-<html lang="en">
-  <head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend_web</title>
-  </head>
-  <body>
+    <title>Scouting Terminal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              // Gama de Verdes/Teals de Éxito (Basada en el color #76ABAE)
+              emerald: {
+                300: '#A3C7C9', // Tono claro para etiquetas secundarias
+                400: '#76ABAE', // Color base para textos de coincidencia e indicadores de éxito
+                500: '#5A8B8E', // Color para botones activos
+                600: '#3D6366', // Estado hover para botones de acción
+              },
+              // Gama de Alertas y Enfoque Secundario (Basada en el naranja vibrante #FF5722)
+              cyan: {
+                300: '#FFAB91', // Naranja pastel suave
+                400: '#FF7043', // Naranja de intensidad media
+                500: '#FF5722', // Color de alta energía para desgloses y botones clave
+              },
+              // Gama de Énfasis de Agenda (Mapeada a variaciones complementarias de terracota y ocre)
+              purple: {
+                300: '#F5CBA7', // Crema/Ocre suave para insignias de la red
+                400: '#E59866', // Terracota claro
+                500: '#D35400', // Óxido profundo para delimitación de bloques de la agenda
+                600: '#A04000',
+              },
+              // Estructura de Fondos, Contenedores y Textos (Basada en el Carbón #303841 y Blanco Roto #F5F5F5)
+              slate: {
+                400: '#F5F5F5', // Texto principal de alta visibilidad (Blanco roto)
+                500: '#B3B8BC', // Texto secundario / Gris desaturado estructurado
+                700: '#4F5A66', // Bordes estándar de tarjetas y separadores
+                800: '#76ABAE', // Bordes activos y estados de foco (Hereda el Teal de marca)
+                900: '#303841', // Fondo interno de los bloques y tarjetas (Carbón base)
+                950: '#1A1D24', // FONDO PRINCIPAL ABSOLUTO (Variación ultra oscura para contraste de capas)
+              },
+              // Identidad visual unificada
+              brand: {
+                glow: '#FF5722',
+                accent: '#76ABAE',
+              }
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-slate-950">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+</body>
 </html>

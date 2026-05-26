@@ -12,7 +12,7 @@ def leer_tabla_con_multiindex(archivo):
         if tabla.columns.empty:
             continue
         
-        # Si los nombres de columna son enteros, la tabla no sirve (probablemente sin encabezados)
+        # Si los nombres de columna son enteros, la tabla no sirve 
         if any(isinstance(c, int) for c in tabla.columns):
             continue
         

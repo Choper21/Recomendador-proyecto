@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Se previene el scroll horizontal no deseado */
+body {
+  overflow-x: hidden;
+}
