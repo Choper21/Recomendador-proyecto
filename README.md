@@ -14,6 +14,7 @@ Aplicación full‑stack que combina aprendizaje automático, filtrado colaborat
 - 👥 **“Para ti”** – recomendaciones colaborativas: “Usuarios que buscaron lo mismo que tú también vieron a…”
 - 🔖 **Guardados** – cada usuario puede guardar jugadores y recibir sugerencias del tipo *“Usuarios con gustos similares también guardaron a…”*.
 - 📊 **Datos reales** – extracción automática desde FBref (Premier League) combinando múltiples tablas.
+- 📊 **Minería de Datos (ETL Pipeline)** – Extracción, limpieza y normalización automática de datasets estadísticos complejos desde FBref mediante técnicas de *scraping* estructurado.
 - 🎨 **Interfaz moderna** – construida con React + Tailwind CSS, modo oscuro, diseño *glassmorphism*.
 
 ---
